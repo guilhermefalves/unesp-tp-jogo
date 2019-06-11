@@ -6,11 +6,16 @@ public class Server implements Runnable
     ServerSocket server;
     Socket client;
     String in, out;
+    Request request;
 
+    GameBoard gameBoard;
     public Server()
     {
         try {
-            this.server = new ServerSocket(11000);
+            this.request = new Request();
+            this.server  = new ServerSocket(11000);
+
+            this.gameBoard = new GameBoard();
         } catch(Exception e) {}
     }
 
@@ -18,21 +23,31 @@ public class Server implements Runnable
     {
         try {
             while (true) {
+                // Espero até que seja feita uma requisição
                 this.client = this.server.accept();
 
                 // Recebo um objeto Request
                 ObjectInputStream in = new ObjectInputStream(this.client.getInputStream());
-                Request request = (Request) in.readObject();
-                System.out.println(request.method);
+                this.request = (Request) in.readObject();
+                System.out.println(this.request.method);
 
                 // Realizo o tratamento nesse objeto
-                request.processRequest();
+                this.processRequest();
 
                 // E o devolvo para o client
                 ObjectOutputStream objOut = new ObjectOutputStream(this.client.getOutputStream());
-                objOut.writeObject(request);
+                objOut.writeObject(this.request);
             }
         } catch (Exception e) {}
+    }
+
+    public void processRequest()
+    {
+        switch(this.request.method) {
+            case "getSquares":
+                this.request.squares = this.gameBoard.getSquares();
+                break;
+        }
     }
 
     public void sendOutput(String out)
@@ -50,5 +65,6 @@ public class Server implements Runnable
         Server server = new Server();
         Thread t = new Thread(server);
         t.start();
+        System.out.println("Server Started");
     }
 }

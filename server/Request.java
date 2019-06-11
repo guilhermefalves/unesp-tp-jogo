@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Request implements Serializable
 {
@@ -7,17 +8,8 @@ public class Request implements Serializable
     // O que será feito (getSquares, movePlayer, etc)
     String method;
 
-    /**
-     * como enviar/receber coisas genéricas, como arraylist<square>?
-     * 1) criar uma referencia para TODOS os objetos em request
-     * assim o processRequest irá fazer o necessário e dps salvará a variável que
-     * precisa ser salva (DESVANTAGEM: tamanho da requisição, escalabilidade)
-     * 2) "JSON" ou um Object genérico, que deve ser transformado para então ser usado
-     */
-    Request(String method)
-    {
-        this.method = method;
-    }
+    // Os objetos que podem ser enviados
+    ArrayList<Square> squares;
 
     @Override
     public String toString()
@@ -25,13 +17,10 @@ public class Request implements Serializable
         return this.method;
     }
 
-    public String processRequest()
+    Request(String method)
     {
-        switch (this.method) {
-            case "getSquares":
-                return "i will return the squares positions?";
-            default:
-                return "asd";
-        }
+        this.method = method;
     }
+
+    Request() {}
 }
