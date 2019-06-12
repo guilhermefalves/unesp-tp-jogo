@@ -27,8 +27,6 @@ public class GameBoard extends JPanel
         this.panelSize = new Dimension(1000, 600);
         setPreferredSize(panelSize);
 
-        // Posição inicial dos elementos inseridos
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 40, 40));
         this.client = client;
         this.squares = this.getSquaresInServer();
     }

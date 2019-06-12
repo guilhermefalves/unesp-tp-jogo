@@ -6,7 +6,7 @@ class MazeBomb extends JFrame
 {
     Client client;
     GameBoard gameboard;
-    // Player player;
+    Player player;
 
     MazeBomb()
     {
@@ -14,9 +14,18 @@ class MazeBomb extends JFrame
 
         this.client = new Client();
 
-        gameboard = new GameBoard(this.client);
-        // player = new Player("orange", gameboard);
-        // gameboard.add(player);
+        this.gameboard = new GameBoard(this.client);
+
+        // Requisito ao server para que crie um novo jogador
+        this.client.requireData("newPlayer");
+
+        // E crio o player no client, de acordo com o que veio do server
+        Player player = new Player(gameboard, this.client.request.player);
+
+        // Defino em que posição o player irá começar
+        this.gameboard.setLayout(new FlowLayout(FlowLayout.LEFT, player.getX(), player.getY()));
+
+        gameboard.add(player);
         add(gameboard);
 
         setPreferredSize(new Dimension(1000,600));
@@ -27,10 +36,8 @@ class MazeBomb extends JFrame
         pack();
         setVisible(true);
 
-        // // TODO: deve setar o foco para o jogador correto...
-        // // Exemplo: no pc do player1, player1.requestFocus();
-        // player.requestFocus();
-
+        // Coloco o foco no jogador para pegar os eventos do KeyListener
+        player.requestFocus();
     }
 
     public static void main(String[] args)

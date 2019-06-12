@@ -1,6 +1,6 @@
 import java.net.*;
 import java.io.*;
-
+import java.util.ArrayList;
 public class Server implements Runnable
 {
     ServerSocket server;
@@ -9,6 +9,9 @@ public class Server implements Runnable
     Request request;
 
     GameBoard gameBoard;
+    ArrayList<Player> players;
+    ArrayList<String> playersColors;
+
     public Server()
     {
         try {
@@ -16,6 +19,9 @@ public class Server implements Runnable
             this.server  = new ServerSocket(11000);
 
             this.gameBoard = new GameBoard();
+
+            players = new ArrayList<Player>();
+            playersColors = new ArrayList<String>();
         } catch(Exception e) {}
     }
 
@@ -46,6 +52,12 @@ public class Server implements Runnable
         switch(this.request.method) {
             case "getSquares":
                 this.request.squares = this.gameBoard.getSquares();
+                break;
+            case "newPlayer":
+                Player p = new Player(this.playersColors, this.gameBoard.getDimension());
+                this.request.player = p;
+                this.players.add(p);
+                this.playersColors.add(p.getColor());
                 break;
         }
     }

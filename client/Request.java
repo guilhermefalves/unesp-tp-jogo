@@ -7,8 +7,9 @@ public class Request implements Serializable {
     // O que será feito (getSquares, movePlayer, etc)
     String method;
 
-    // Os objetos que podem ser enviados
+    // Os objetos que podem ser enviados/recebidos
     ArrayList<Square> squares;
+    Player player;
 
     @Override
     public String toString()

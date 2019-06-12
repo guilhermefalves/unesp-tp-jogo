@@ -51,4 +51,9 @@ public class GameBoard
     {
         return this.squares;
     }
+
+    public Dimension getDimension()
+    {
+        return this.panelSize;
+    }
 }

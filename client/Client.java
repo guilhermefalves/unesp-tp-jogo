@@ -9,9 +9,27 @@ public class Client implements Runnable
     Thread thread;
     Request request;
 
-    public void run()
+    public void run() {}
+
+    Client()
     {
-        synchronized(this) {
+        this.thread  = new Thread(this);
+        this.request = new Request();
+
+        this.thread.start();
+    }
+
+    /**
+     * Função para enviar um objeto Request para o servidor, também é responsável
+     * por esperar uma resposta (Request).
+     * A função usa um wait para que seja sincrona, ou seja, o programa só continua
+     * depois que os dados do servidor voltarem
+     */
+    public synchronized Request requireData(String method)
+    {
+        this.request.method = method;
+
+        synchronized(this.thread) {
             try {
                 Socket server = new Socket("localhost", 11000);
                 ObjectOutputStream objOut = new ObjectOutputStream(server.getOutputStream());
@@ -20,29 +38,10 @@ public class Client implements Runnable
                 ObjectInputStream objIn = new ObjectInputStream(server.getInputStream());
                 this.request = (Request) objIn.readObject();
                 server.close();
-                notify();
             } catch (Exception e) {
                 System.out.println("EXCEPTION IN CLIENT " + e.getMessage());
                 System.exit(0);
             }
-        }
-    }
-
-    Client()
-    {
-        this.thread  = new Thread(this);
-        this.request = new Request();
-    }
-
-    public synchronized Request requireData(String method)
-    {
-        this.request.method = method;
-        this.thread.start();
-        
-        synchronized(this.thread) {
-            try {
-                wait();
-            } catch (Exception e) {}
         }
 
         return this.request;
