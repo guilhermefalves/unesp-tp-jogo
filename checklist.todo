@@ -1,0 +1,14 @@
+✔ Ao iniciar o server, gerar o tabuleiro @done (10/06/2019 23:55:50)
+✔ Criar funçao para retornar o tabuleiro @done (10/06/2019 23:55:51)
+✔ Criar função para retornar player (cor, xinicial, yinicial) @done (11/06/2019 22:18:01)
+☐ Alterar a move client para enviar a posicao dos players para o server
+    ☐ ao alterar a posição, alterar no outro client também
+☐ Ao encerrar o client, preciso remover de userColors e players
+☐ fazer player atirar
+o tiro pode ser oculto?
+☐ o tiro deve destruir objetos?
+    se sim, não preciso evitar que tenham caminhos impossiveis
+        ☐ função para remover squares...
+    se não, tratar caminhos impossiveis....
+☐ como verificar se o tiro acertou o outro player?
+    ☐ se acertou, deixar o player atingido tentar defender
