@@ -1,5 +1,3 @@
-import java.awt.*;
-import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
@@ -9,15 +7,13 @@ public class Client implements Runnable
     Thread thread;
     Request request;
 
-    public void run() {}
-
     Client()
     {
         this.thread  = new Thread(this);
         this.request = new Request();
-
-        this.thread.start();
     }
+
+    public void run() {}
 
     /**
      * Função para enviar um objeto Request para o servidor, também é responsável
@@ -40,10 +36,25 @@ public class Client implements Runnable
                 server.close();
             } catch (Exception e) {
                 System.out.println("EXCEPTION IN CLIENT " + e.getMessage());
+                e.printStackTrace();
                 System.exit(0);
             }
         }
 
         return this.request;
+    }
+
+    public void sendData(String method)
+    {
+        this.request.method = method;
+        try {
+            Socket server = new Socket("localhost", 11000);
+            ObjectOutputStream objOut = new ObjectOutputStream(server.getOutputStream());
+            objOut.writeObject(this.request);
+        } catch (Exception e) {
+            System.out.println("EXCEPTION IN CLIENT " + e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
 }

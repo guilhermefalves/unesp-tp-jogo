@@ -44,7 +44,10 @@ public class Server implements Runnable
                 ObjectOutputStream objOut = new ObjectOutputStream(this.client.getOutputStream());
                 objOut.writeObject(this.request);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.out.println("Erro " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void processRequest()
@@ -54,21 +57,54 @@ public class Server implements Runnable
                 this.request.squares = this.gameBoard.getSquares();
                 break;
             case "newPlayer":
-                Player p = new Player(this.playersColors, this.gameBoard.getDimension());
+                Player p = new Player(this.players.size() + 1, this.playersColors, this.gameBoard.getDimension());
                 this.request.player = p;
                 this.players.add(p);
                 this.playersColors.add(p.getColor());
                 break;
+            case "movePlayer":
+                // Percorro os players
+                for (Player player: this.players) {
+                    // e ao encontrar o que fez a requisição
+                    if (player.equals(this.request.player)) {
+                        // altero sua posição
+                        player.setPosition(this.request.player.getX(), this.request.player.getY());
+                        // e por fim envio essa ação a todos os outros players
+                        this.sendTo(this.players, player, "movePlayers");
+                        break;
+                    }
+                }
+                break;
+
         }
     }
 
-    public void sendOutput(String out)
+    /**
+     * Função para enviar ações geradas por um player aos outros
+     * @param players 
+     * @param exclude
+     * @param method
+     */
+    public void sendTo(ArrayList<Player> players, Player exclude, String method)
     {
+        this.request.method = method;
+        Socket server;
+        ObjectOutputStream objOut;
         try {
-            PrintStream ps = new PrintStream(this.client.getOutputStream());
-            ps.println(out);
+            for(Player p: players) {
+                // não envio ao player que gerou essa ação
+                if (p.equals(exclude)) {
+                    continue;
+                }
+                server = new Socket("localhost", 11000 + p.getId());
+                objOut = new ObjectOutputStream(server.getOutputStream());
+                objOut.writeObject(this.request);
+                server.close();
+            }
         } catch (Exception e) {
-
+            System.out.println("EXCEPTION IN CLIENT " + e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
         }
     }
 

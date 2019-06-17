@@ -12,14 +12,18 @@ public class Player implements Serializable
     private ArrayList<String> usedColors;
     private int x, y;
     private Dimension gameBoardDimension;
-    Player(ArrayList<String> usedColors, Dimension gbDimension)
+    private int id;
+
+    Player(int id, ArrayList<String> usedColors, Dimension gbDimension)
     {
+        this.id = id;
         this.usedColors = usedColors;
         this.color = this.randomColor();
         this.gameBoardDimension = gbDimension;
         this.x = this.randomX();
         this.y = this.randomY();
     }
+
     private int randomX()
     {
         Random r = new Random();
@@ -32,6 +36,26 @@ public class Player implements Serializable
         Random r = new Random();
         int max = this.gameBoardDimension.height / Square.getHeight();
         return (r.nextInt(max - 1) + 1) * Square.getHeight();
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public int getX()
+    {
+        return this.x;
+    }
+
+    public int getY()
+    {
+        return this.y;
+    }
+
+    public void setPosition(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
     }
 
     private String randomColor()
@@ -50,11 +74,14 @@ public class Player implements Serializable
         return this.color;
     }
 
-    public static void main(String args[])
-    {
-        ArrayList<String> u = new ArrayList<String>();
-        Dimension d = new Dimension(1000, 600);
-        Player p = new Player(u, d);
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Player)) {
+            return false;
+        }
+        Player p = (Player) obj;
 
+        return p.getId() == this.id;
+        // return this.color.equals(p.color);
     }
 }

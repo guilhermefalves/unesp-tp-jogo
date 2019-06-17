@@ -11,9 +11,11 @@ public class Player extends JPanel implements KeyListener, Serializable
 
     private String color;
     private String imgDir;
-    private Image img;
-    private GameBoard gameBoard;
+    private transient Image img;
+    private transient GameBoard gameBoard;
+    private transient Client client;
     private int x, y;
+    private int id;
 
     Player(String color, GameBoard gameBoard)
     {
@@ -32,13 +34,15 @@ public class Player extends JPanel implements KeyListener, Serializable
         this.addKeyListener(this);
     }
 
-    Player(GameBoard g, Player p)
+    Player(GameBoard gameBoard, Player player, Client client)
     {
-        this.color     = p.getColor();
+        this.color     = player.color;
         this.imgDir    = "imgs/square-" + this.color + ".png";
-        this.gameBoard = g;
-        this.x = p.x;
-        this.y = p.y;
+        this.gameBoard = gameBoard;
+        this.client    = client;
+        this.x = player.x;
+        this.y = player.y;
+        this.id = player.id;
 
         try {
             img = ImageIO.read(new File(this.imgDir));
@@ -49,6 +53,33 @@ public class Player extends JPanel implements KeyListener, Serializable
 
         setPreferredSize(Square.getDimension());
         this.addKeyListener(this);
+    }
+
+    /**
+     * Construtor dos outros jogadores, por isso não é adicionado o KeyListener
+     * @param player
+     */
+    Player(Player player)
+    {
+        this.color     = player.color;
+        this.imgDir    = "imgs/square-" + this.color + ".png";
+        this.x = player.x;
+        this.y = player.y;
+        this.id = player.id;
+
+        try {
+            img = ImageIO.read(new File(this.imgDir));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Imagem não encontrada " + e.getMessage());
+            System.exit(1);
+        }
+
+        setPreferredSize(Square.getDimension());
+    }
+
+    public int getId()
+    {
+        return this.id;
     }
 
     public String getColor()
@@ -98,6 +129,10 @@ public class Player extends JPanel implements KeyListener, Serializable
         this.x = newX;
         this.y = newY;
         setLocation(newX, newY);
+
+        // Envio o movimento para o server
+        this.client.request.player = this;
+        this.client.sendData("movePlayer");
     }
 
     private Boolean isValidMovement(int x, int y)
@@ -126,7 +161,17 @@ public class Player extends JPanel implements KeyListener, Serializable
     {
         super.paintComponent(g);
         g.drawImage(this.img, 0, 0, Square.getWidth(), Square.getHeight(), this);
-
         Toolkit.getDefaultToolkit().sync();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Player)) {
+            return false;
+        }
+        Player p = (Player) obj;
+
+        return p.getId() == this.id;
+        // return this.color.equals(p.color);
     }
 }
