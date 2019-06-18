@@ -126,13 +126,27 @@ public class Player extends JPanel implements KeyListener, Serializable
             return;
         }
 
-        this.x = newX;
-        this.y = newY;
-        setLocation(newX, newY);
+        // Altero a posição do player
+        this.setPosition(newX, newY);
 
         // Envio o movimento para o server
         this.client.request.player = this;
         this.client.sendData("movePlayer");
+    }
+
+    public void setPosition(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+        try {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    setLocation(x, y);
+                }
+            });
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
     }
 
     private Boolean isValidMovement(int x, int y)

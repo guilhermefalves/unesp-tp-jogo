@@ -32,7 +32,6 @@ class MazeBomb extends JFrame implements Runnable
         Player player = new Player(gameboard, this.client.request.player, this.client);
 
         // Defino em que posição o player irá começar
-        this.gameboard.setLayout(new FlowLayout(FlowLayout.LEFT, player.getX(), player.getY()));
 
         this.gameboard.add(player);
         add(gameboard);
@@ -85,7 +84,21 @@ class MazeBomb extends JFrame implements Runnable
     {
         switch(request.method) {
             case "movePlayers":
-                // TODO: movimentar os players do array
+                if (!players.contains(request.player)) {
+                    System.out.println("Não contêm");
+                    Player play = new Player(request.player);
+                    players.add(play);
+                    this.gameboard.add(play);
+                    this.pack();
+                }
+
+                // Percorro os players e movimento os que forem necessários
+                for (Player p: players) {
+                    if (request.player.equals(p)) {
+                        p.setPosition(request.player.getX(), request.player.getY());
+                        break;
+                    }
+                }
                 break;
         }
     }
